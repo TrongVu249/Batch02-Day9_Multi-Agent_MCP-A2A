@@ -58,8 +58,9 @@ async def analyze_law(state: LawState) -> dict:
         SystemMessage(
             content=(
                 "You are a senior corporate litigation attorney specialising in contract law, "
-                "tort law, and general business law. Analyse the legal aspects of the question "
-                "thoroughly, covering relevant statutes, case law principles, and liability exposure."
+                "tort law, and general business law. Analyse the legal aspects of the question. "
+                "CRITICAL: Keep your response extremely brief, concise, and straight to the point. "
+                "Limit your response to under 150 words."
             )
         ),
         HumanMessage(content=state["question"]),
@@ -69,66 +70,40 @@ async def analyze_law(state: LawState) -> dict:
 
 
 async def check_routing(state: LawState) -> dict:
-    """Determine whether tax and/or compliance sub-agents are needed.
-
-    Returns updated state flags so the routing function can read them.
-    If delegation depth is already at the max, skip further delegation.
+    """Rule-based decision: check whether tax and/or compliance sub-agents are needed.
+    
+    Avoids LLM latency entirely for routing.
     """
     depth = state.get("delegation_depth", 0)
     if depth >= MAX_DELEGATION_DEPTH:
         logger.info("Max delegation depth reached (%d); skipping sub-agents", depth)
         return {"needs_tax": False, "needs_compliance": False}
 
-    llm = get_llm()
-    messages = [
-        SystemMessage(
-            content=(
-                'You are a legal routing expert. Based on the question, decide whether '
-                'specialist sub-agents are needed.\n'
-                'Reply with ONLY valid JSON — no markdown, no extra text:\n'
-                '{"needs_tax": <true|false>, "needs_compliance": <true|false>}\n\n'
-                'needs_tax = true  → question involves tax law, IRS, tax evasion, penalties\n'
-                'needs_compliance = true → question involves regulatory compliance, SEC, SOX, AML, FCPA'
-            )
-        ),
-        HumanMessage(content=state["question"]),
-    ]
-    result = await llm.ainvoke(messages)
-    raw = result.content.strip()
+    question_lower = state["question"].lower()
+    needs_tax = any(kw in question_lower for kw in ["tax", "irs", "evasion", "avoidance", "irc", "thuế"])
+    needs_compliance = any(kw in question_lower for kw in ["compliance", "regulatory", "sec", "sox", "aml", "fcpa", "regulation", "luật quy định"])
 
-    # Strip markdown code fences if present
-    if raw.startswith("```"):
-        raw = raw.split("```")[1]
-        if raw.startswith("json"):
-            raw = raw[4:]
-        raw = raw.strip()
+    # Fallback: if neither matches, we run both to be safe
+    if not needs_tax and not needs_compliance:
+        needs_tax = True
+        needs_compliance = True
 
-    try:
-        parsed = json.loads(raw)
-    except json.JSONDecodeError:
-        logger.warning("Routing LLM returned non-JSON: %r — defaulting to both=True", raw)
-        parsed = {"needs_tax": True, "needs_compliance": True}
-
-    needs_tax = bool(parsed.get("needs_tax", True))
-    needs_compliance = bool(parsed.get("needs_compliance", True))
-    logger.info("Routing decision: needs_tax=%s needs_compliance=%s", needs_tax, needs_compliance)
+    logger.info("Rule-based routing decision: needs_tax=%s needs_compliance=%s", needs_tax, needs_compliance)
     return {"needs_tax": needs_tax, "needs_compliance": needs_compliance}
 
 
 def route_to_subagents(state: LawState) -> list[Send]:
-    """Routing function: dispatch parallel Send objects based on routing flags.
+    """Routing function: dispatch parallel Send objects including general law analysis.
 
-    This function is used with add_conditional_edges; it returns a list of
-    Send objects which LangGraph executes as parallel branches.
+    Runs analyze_law, call_tax, and call_compliance concurrently.
     """
     sends: list[Send] = []
+    # Always run general law analysis in parallel with subagents
+    sends.append(Send("analyze_law", state))
     if state.get("needs_tax"):
         sends.append(Send("call_tax", state))
     if state.get("needs_compliance"):
         sends.append(Send("call_compliance", state))
-    if not sends:
-        # No sub-agents needed — go straight to aggregation
-        sends.append(Send("aggregate", state))
     return sends
 
 
@@ -193,7 +168,9 @@ async def aggregate(state: LawState) -> dict:
             content=(
                 "You are a senior legal counsel synthesising specialist analyses into a "
                 "comprehensive, well-structured response for the client. Combine the following "
-                "analyses into a cohesive answer with clear sections. Avoid redundancy. "
+                "analyses into a cohesive answer. "
+                "CRITICAL: Keep your response extremely brief, concise, and straight to the point. "
+                "Limit the entire final answer to under 250 words. Avoid redundancy. "
                 "End with a brief disclaimer that the analysis is educational and the client "
                 "should consult licensed attorneys for their specific situation."
             )
@@ -218,17 +195,17 @@ def create_graph():
     graph.add_node("call_compliance", call_compliance)
     graph.add_node("aggregate", aggregate)
 
-    graph.set_entry_point("analyze_law")
-    graph.add_edge("analyze_law", "check_routing")
+    # Start with check_routing (rule-based, 0ms)
+    graph.set_entry_point("check_routing")
 
-    # Conditional parallel dispatch: after check_routing, route_to_subagents
-    # returns a list of Send objects (to call_tax, call_compliance, or aggregate)
+    # Branch in parallel to analyze_law and sub-agents
     graph.add_conditional_edges(
         "check_routing",
         route_to_subagents,
-        ["call_tax", "call_compliance", "aggregate"],
+        ["analyze_law", "call_tax", "call_compliance"],
     )
 
+    graph.add_edge("analyze_law", "aggregate")
     graph.add_edge("call_tax", "aggregate")
     graph.add_edge("call_compliance", "aggregate")
     graph.add_edge("aggregate", END)

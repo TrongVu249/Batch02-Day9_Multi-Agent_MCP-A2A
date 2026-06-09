@@ -25,6 +25,10 @@ from a2a.types import (
 logger = logging.getLogger(__name__)
 
 
+_agent_card_cache: dict[str, AgentCard] = {}
+_shared_client: httpx.AsyncClient | None = None
+
+
 async def delegate(
     endpoint: str,
     question: str,
@@ -44,42 +48,50 @@ async def delegate(
     Returns:
         The agent's text response, or an empty string if none could be extracted.
     """
-    async with httpx.AsyncClient(timeout=300.0) as http_client:
+    global _shared_client
+    if _shared_client is None:
+        _shared_client = httpx.AsyncClient(timeout=300.0)
+
+    http_client = _shared_client
+
+    if endpoint not in _agent_card_cache:
         # Fetch agent card
         card_url = f"{endpoint}/.well-known/agent.json"
         card_resp = await http_client.get(card_url)
         card_resp.raise_for_status()
-        agent_card = AgentCard.model_validate(card_resp.json())
+        _agent_card_cache[endpoint] = AgentCard.model_validate(card_resp.json())
 
-        # Build deprecated (legacy) A2AClient — straightforward for send_message
-        client = A2AClient(httpx_client=http_client, agent_card=agent_card)
+    agent_card = _agent_card_cache[endpoint]
 
-        # Build message with trace metadata
-        message = Message(
-            role=Role.user,
-            parts=[Part(root=TextPart(text=question))],
-            message_id=str(uuid4()),
-            context_id=context_id,
-            metadata={
-                "trace_id": trace_id,
-                "context_id": context_id,
-                "delegation_depth": depth,
-            },
-        )
+    # Build deprecated (legacy) A2AClient — straightforward for send_message
+    client = A2AClient(httpx_client=http_client, agent_card=agent_card)
 
-        request = SendMessageRequest(
-            id=str(uuid4()),
-            params=MessageSendParams(message=message),
-        )
+    # Build message with trace metadata
+    message = Message(
+        role=Role.user,
+        parts=[Part(root=TextPart(text=question))],
+        message_id=str(uuid4()),
+        context_id=context_id,
+        metadata={
+            "trace_id": trace_id,
+            "context_id": context_id,
+            "delegation_depth": depth,
+        },
+    )
 
-        logger.debug(
-            "Delegating to %s (depth=%d, trace=%s)", endpoint, depth, trace_id
-        )
+    request = SendMessageRequest(
+        id=str(uuid4()),
+        params=MessageSendParams(message=message),
+    )
 
-        response = await client.send_message(request)
+    logger.debug(
+        "Delegating to %s (depth=%d, trace=%s)", endpoint, depth, trace_id
+    )
 
-        # Extract text from SendMessageResponse
-        return _extract_text(response)
+    response = await client.send_message(request)
+
+    # Extract text from SendMessageResponse
+    return _extract_text(response)
 
 
 def _extract_text(response: object) -> str:

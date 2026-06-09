@@ -38,36 +38,31 @@ Be professional, clear, and make the specialist response accessible to the user.
 """
 
 
+from typing import TypedDict
+from langgraph.graph import StateGraph, END
+from langchain_core.messages import BaseMessage, AIMessage
+
+class CustomerState(TypedDict):
+    messages: list[BaseMessage]
+
 def build_graph(trace_id: str, context_id: str, depth: int) -> Any:
-    """Build a create_react_agent graph with trace context bound into the tool closure.
-
-    Args:
-        trace_id: UUID generated at this request's entry point.
-        context_id: A2A context_id for this conversation.
-        depth: Delegation depth (0 at customer agent).
-
-    Returns:
-        A compiled LangGraph agent.
+    """Build a StateGraph that directly delegates the question to the Law Agent,
+    bypassing customer-level LLM calls to reduce latency.
     """
 
-    @tool
-    async def delegate_to_legal_agent(question: str) -> str:
-        """Send a legal question to the Law Agent for comprehensive analysis.
-
-        The Law Agent will coordinate Tax and Compliance sub-agents in parallel
-        and return a synthesised response covering all relevant legal dimensions.
-
-        Args:
-            question: The legal question to analyse.
-
-        Returns:
-            A comprehensive legal analysis from the multi-agent system.
-        """
+    async def call_law_agent(state: CustomerState) -> dict:
         from common.a2a_client import delegate
         from common.registry_client import discover
 
+        # Extract the question text
+        question = ""
+        for msg in reversed(state.get("messages", [])):
+            if msg.content:
+                question = str(msg.content)
+                break
+
         logger.info(
-            "Customer delegate_to_legal_agent | trace=%s context=%s depth=%d",
+            "Customer direct delegate to Law Agent | trace=%s context=%s depth=%d",
             trace_id, context_id, depth,
         )
 
@@ -81,16 +76,14 @@ def build_graph(trace_id: str, context_id: str, depth: int) -> Any:
                 depth=depth + 1,
             )
             if not result:
-                return "The Law Agent returned an empty response. Please try again."
-            return result
+                result = "The Law Agent returned an empty response. Please try again."
+            return {"messages": [AIMessage(content=result)]}
         except Exception as exc:
-            logger.exception("delegate_to_legal_agent failed: %s", exc)
-            return f"Could not reach the Law Agent: {exc}"
+            logger.exception("Customer direct delegate failed: %s", exc)
+            return {"messages": [AIMessage(content=f"Could not reach the Law Agent: {exc}")]}
 
-    llm = get_llm()
-    graph = create_react_agent(
-        model=llm,
-        tools=[delegate_to_legal_agent],
-        prompt=CUSTOMER_SYSTEM_PROMPT,
-    )
-    return graph
+    graph = StateGraph(CustomerState)
+    graph.add_node("call_law_agent", call_law_agent)
+    graph.set_entry_point("call_law_agent")
+    graph.add_edge("call_law_agent", END)
+    return graph.compile()

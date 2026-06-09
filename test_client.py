@@ -61,7 +61,11 @@ async def main() -> None:
         )
 
         print("Sending request (this may take 30-60s while agents chain)...\n")
+        import time
+        start_time = time.time()
         response = await client.send_message(request)
+        elapsed = time.time() - start_time
+        print(f"Elapsed time for delegation: {elapsed:.2f} seconds")
 
         # Parse response
         result_text = ""

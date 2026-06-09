@@ -361,3 +361,20 @@ async def main():
 if __name__ == "__main__":
     load_dotenv()
     asyncio.run(main())
+    
+# Thêm vào cuối file main.py
+try:
+    from IPython.display import Image, display
+    temp_graph = create_graph()
+    display(Image(temp_graph.get_graph().draw_mermaid_png()))
+except ImportError:
+    try:
+        temp_graph = create_graph()
+        png_bytes = temp_graph.get_graph().draw_mermaid_png()
+        output_path = os.path.join(os.path.dirname(__file__), "graph.png")
+        with open(output_path, "wb") as f:
+            f.write(png_bytes)
+        print(f"Saved graph visualization to {output_path}")
+    except Exception as e:
+        pass
+    

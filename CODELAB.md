@@ -431,4 +431,23 @@ Nếu gặp vấn đề:
 - Latency (Tổng thời gian trả lời 1 câu hỏi của hệ thống) là bao nhiêu giây?
 - Đề xuất phương án giảm latency và demo + show thời gian xử lý đã giảm được khi apply phương án?
 
+### **Trả lời:**
+
+1. **Latency (Tổng thời gian trả lời 1 câu hỏi của hệ thống):**
+   - **Trước tối ưu hóa (Baseline):**
+     - Lần chạy thứ nhất (Cold start): **40.89 giây**
+     - Lần chạy thứ hai (Warm cache): **28.91 giây**
+   - **Sau tối ưu hóa:**
+     - Lần chạy thứ nhất (Cold start): **17.08 giây**
+     - Lần chạy thứ hai (Warm cache): **9.93 giây**
+
+2. **Phương án đề xuất giảm latency & Kết quả:**
+   - **Phương án đề xuất:**
+     - **Tái sử dụng instance ChatOpenAI (Connection Pooling):** Cấu hình cache instance `ChatOpenAI` trong `common/llm.py` để giữ kết nối HTTP/TLS keep-alive tới OpenRouter, tránh bắt tay kết nối lại.
+     - **Lưu cache Registry discovery:** Cache lại các endpoint của tác tử sau lần truy vấn đầu tiên trong `common/registry_client.py`.
+     - **Lưu cache Agent Cards & httpx client:** Trong `common/a2a_client.py`, cache lại cấu hình `AgentCard` và dùng chung đối tượng `httpx.AsyncClient` để loại bỏ việc tải lại tệp `agent.json` của mỗi tác tử liên tục.
+     - **Tối ưu hóa Prompt (Giới hạn độ dài output):** Bổ sung quy định giới hạn độ dài phản hồi dưới 150-250 từ vào prompt của các tác tử (Law Agent, Compliance Agent, Aggregator) để giảm số lượng token LLM cần sinh ra (đây là tác nhân lớn nhất gây trễ).
+   - **Kết quả:**
+     - Thời gian phản hồi giảm từ mức ~30-40 giây xuống còn **dưới 10 giây** (9.93s ở trạng thái hot cache, nhanh hơn gấp **~3-4 lần**).
+
 **Chúc các bạn học tốt! 🚀**
