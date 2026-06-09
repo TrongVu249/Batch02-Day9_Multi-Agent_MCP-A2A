@@ -1,0 +1,82 @@
+[
+  {
+    "question": "Hình phạt cho tội tàng trữ trái phép chất ma tuý theo Điều 249 Bộ luật Hình sự?",
+    "expected_answer": "Phạt tù từ 1 đến 5 năm đối với trường hợp tàng trữ từ 1g đến dưới 5g heroin hoặc cocaine, hoặc chất ma tuý khác với khối lượng tương đương.",
+    "expected_context": "Bộ luật Hình sự 2015, Điều 249"
+  },
+  {
+    "question": "Luật Phòng chống ma tuý 2021 quy định những hình thức cai nghiện nào?",
+    "expected_answer": "Cai nghiện tự nguyện tại gia đình, cai nghiện tự nguyện tại cộng đồng, cai nghiện tự nguyện tại cơ sở cai nghiện, và cai nghiện bắt buộc tại cơ sở cai nghiện.",
+    "expected_context": "Luật Phòng chống ma tuý 2021, Chương V"
+  },
+  {
+    "question": "Danh mục các chất ma tuý thuộc nhóm I theo quy định pháp luật Việt Nam gồm những chất nào?",
+    "expected_answer": "Nhóm I gồm các chất ma tuý tuyệt đối cấm sử dụng trong y học và đời sống, bao gồm heroin, cocaine, methamphetamine, MDMA (ecstasy), cannabis (cần sa), và các chất tương tự.",
+    "expected_context": "Nghị định 57/2022/NĐ-CP, Phụ lục I"
+  },
+  {
+    "question": "Tội vận chuyển trái phép chất ma tuý theo Điều 250 Bộ luật Hình sự bị xử phạt như thế nào?",
+    "expected_answer": "Người phạm tội vận chuyển trái phép chất ma tuý có thể bị phạt tù từ 2 đến 7 năm đối với trường hợp cơ bản. Trường hợp nặng hơn như vận chuyển có tổ chức, số lượng lớn, tái phạm có thể bị phạt tù từ 7 đến 15 năm hoặc tù chung thân.",
+    "expected_context": "Bộ luật Hình sự 2015, Điều 250"
+  },
+  {
+    "question": "Tội mua bán trái phép chất ma tuý theo Điều 251 Bộ luật Hình sự quy định mức phạt tối đa là bao nhiêu?",
+    "expected_answer": "Tội mua bán trái phép chất ma tuý theo Điều 251 có mức phạt tối đa là tử hình đối với trường hợp đặc biệt nghiêm trọng như mua bán với số lượng rất lớn, có tổ chức, hoặc đã bị kết án về tội này.",
+    "expected_context": "Bộ luật Hình sự 2015, Điều 251"
+  },
+  {
+    "question": "Tội sử dụng trái phép chất ma tuý theo Bộ luật Hình sự bị xử lý như thế nào?",
+    "expected_answer": "Người sử dụng trái phép chất ma tuý lần đầu không bị truy cứu trách nhiệm hình sự nhưng bị xử phạt hành chính và đưa vào cơ sở cai nghiện. Trường hợp tái phạm nhiều lần có thể bị xử lý hình sự theo điều khoản tương ứng.",
+    "expected_context": "Bộ luật Hình sự 2015; Luật Phòng chống ma tuý 2021"
+  },
+  {
+    "question": "Tội tổ chức sử dụng trái phép chất ma tuý theo Điều 255 Bộ luật Hình sự bị xử phạt ra sao?",
+    "expected_answer": "Người tổ chức sử dụng trái phép chất ma tuý bị phạt tù từ 2 đến 7 năm đối với trường hợp cơ bản. Nếu phạm tội với người dưới 16 tuổi, phụ nữ mang thai hoặc có tổ chức quy mô lớn, có thể bị phạt tù từ 7 đến 15 năm.",
+    "expected_context": "Bộ luật Hình sự 2015, Điều 255"
+  },
+  {
+    "question": "Theo Luật Phòng chống ma tuý 2021, trách nhiệm của gia đình trong phòng chống ma tuý là gì?",
+    "expected_answer": "Gia đình có trách nhiệm giáo dục, quản lý thành viên phòng chống ma tuý; phát hiện và thông báo kịp thời cho cơ quan chức năng khi có thành viên nghiện ma tuý; phối hợp với cơ quan tổ chức cai nghiện; hỗ trợ người sau cai nghiện tái hoà nhập cộng đồng.",
+    "expected_context": "Luật Phòng chống ma tuý 2021, Điều 9"
+  },
+  {
+    "question": "Quy trình xác định người nghiện ma tuý theo Luật Phòng chống ma tuý 2021 diễn ra như thế nào?",
+    "expected_answer": "Người bị nghi nghiện ma tuý phải được kiểm tra, xét nghiệm tại cơ sở y tế được chỉ định. Căn cứ kết quả xét nghiệm và đánh giá lâm sàng, hội đồng y tế xác định tình trạng nghiện. Quyết định xác định người nghiện được ban hành bởi cơ quan có thẩm quyền.",
+    "expected_context": "Luật Phòng chống ma tuý 2021, Chương V"
+  },
+  {
+    "question": "Điều kiện để được cai nghiện tự nguyện tại gia đình theo quy định pháp luật là gì?",
+    "expected_answer": "Người nghiện ma tuý được cai nghiện tự nguyện tại gia đình khi có đủ điều kiện: gia đình đảm bảo điều kiện cai nghiện, cam kết quản lý giám sát, và được uỷ ban nhân dân cấp xã chấp thuận. Người nghiện phải tuân thủ phác đồ điều trị và báo cáo định kỳ cho cơ quan có thẩm quyền.",
+    "expected_context": "Luật Phòng chống ma tuý 2021, Điều 28"
+  },
+  {
+    "question": "Tiền chất ma tuý là gì và được quản lý như thế nào theo pháp luật Việt Nam?",
+    "expected_answer": "Tiền chất ma tuý là các hoá chất không thể thiếu trong quá trình sản xuất chất ma tuý. Pháp luật Việt Nam quản lý tiền chất thông qua cơ chế cấp phép xuất nhập khẩu, kiểm soát lưu thông, báo cáo định kỳ và thanh tra kiểm tra. Danh mục tiền chất được quy định tại các nghị định chuyên biệt.",
+    "expected_context": "Nghị định 57/2022/NĐ-CP về kiểm soát tiền chất"
+  },
+  {
+    "question": "Mức xử phạt hành chính đối với hành vi sử dụng trái phép chất ma tuý là bao nhiêu?",
+    "expected_answer": "Người sử dụng trái phép chất ma tuý có thể bị phạt tiền từ 500.000 đồng đến 1.000.000 đồng, đồng thời bị áp dụng biện pháp giáo dục tại xã, phường, thị trấn hoặc đưa vào cơ sở cai nghiện bắt buộc nếu đã bị xử lý nhiều lần.",
+    "expected_context": "Nghị định xử phạt vi phạm hành chính trong lĩnh vực phòng chống ma tuý"
+  },
+  {
+    "question": "Nghệ sĩ nào đã bị bắt hoặc xử lý vì liên quan đến ma tuý tại Việt Nam trong những năm gần đây?",
+    "expected_answer": "Một số nghệ sĩ Việt Nam đã bị xử lý vì liên quan ma tuý, trong đó có các trường hợp sử dụng ma tuý tại các bữa tiệc, bị bắt quả tang khi tàng trữ hoặc sử dụng chất kích thích. Nhiều nghệ sĩ sau đó bị đình chỉ hoạt động nghệ thuật và phải đi cai nghiện.",
+    "expected_context": "Tin tức báo chí về nghệ sĩ liên quan ma tuý"
+  },
+  {
+    "question": "Hậu quả pháp lý và nghề nghiệp của nghệ sĩ bị bắt vì sử dụng ma tuý là gì?",
+    "expected_answer": "Nghệ sĩ bị bắt vì sử dụng ma tuý có thể bị xử phạt hành chính, cai nghiện bắt buộc, và bị các cơ quan quản lý văn hoá đình chỉ hoạt động biểu diễn. Nhiều trường hợp bị cấm xuất hiện trên các phương tiện truyền thông và mất hợp đồng quảng cáo.",
+    "expected_context": "Quy định quản lý biểu diễn nghệ thuật; tin tức nghệ sĩ"
+  },
+  {
+    "question": "Quy định về quản lý người sau cai nghiện ma tuý theo Luật Phòng chống ma tuý 2021 là gì?",
+    "expected_answer": "Người sau cai nghiện được quản lý tại nơi cư trú trong thời gian từ 1 đến 2 năm. Uỷ ban nhân dân cấp xã có trách nhiệm phân công cán bộ theo dõi, hỗ trợ tái hoà nhập cộng đồng, tạo việc làm và tư vấn tâm lý cho người sau cai nghiện.",
+    "expected_context": "Luật Phòng chống ma tuý 2021, Chương VI"
+  },
+  {
+    "question": "Vai trò của cơ quan công an trong phòng chống ma tuý theo pháp luật Việt Nam là gì?",
+    "expected_answer": "Cơ quan công an có nhiệm vụ phòng ngừa, phát hiện, điều tra, xử lý các tội phạm về ma tuý; triệt phá các đường dây mua bán, vận chuyển ma tuý; phối hợp với các cơ quan chức năng trong tuyên truyền và cai nghiện; và hợp tác quốc tế trong đấu tranh chống ma tuý.",
+    "expected_context": "Luật Phòng chống ma tuý 2021, Điều 8; Bộ luật Tố tụng hình sự"
+  }
+]
